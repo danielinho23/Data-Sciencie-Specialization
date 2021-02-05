@@ -10,3 +10,6 @@
 [submodule "ProgrammingAssignment2"]
 	path = ProgrammingAssignment2
 	url = https://github.com/danielinho23/ProgrammingAssignment2.git
+[submodule "datasharing"]
+	path = datasharing
+	url = https://github.com/danielinho23/datasharing.git
