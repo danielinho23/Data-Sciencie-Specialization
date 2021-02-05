@@ -1,0 +1,112 @@
+---
+title: "Prediction Assignment Writeup"
+date: "4/2/2021"
+output: html_document
+---
+
+### Background
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+
+Six young health participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E).
+
+Read more: http:/groupware.les.inf.puc-rio.br/har#ixzz4TjqQPxze
+
+### Data
+The training data for this project are available here:
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+
+The test data are available here:
+
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+
+### What you should submit
+
+The goal of your project is to predict the manner in which they did the exercise. This is the "classe" variable in the training set. You may use any of the other variables to predict with. You should create a report describing how you built your model, how you used cross validation, what you think the expected out of sample error is, and why you made the choices you did. You will also use your prediction model to predict 20 different test cases.
+
+## Code
+```{r, message=FALSE, results='hide', warning=FALSE}
+library(ggplot2); library(caret); library(rattle); library(rpart); library(rattle); library(randomForest)
+```
+
+We will set the seed and load the files classifying the NA's as strings and removing the columns without values.
+
+```{r, message=FALSE, results='hide'}
+set.seed(1234)
+#loading the data
+trainingset<-read.csv("pml-training.csv", na.strings = c("NA","#DIV/0!",""))
+testingset<- read.csv("pml-testing.csv", na.strings = c("NA","#DIV/0!",""))
+
+#removing columns
+trainingset<-trainingset[,colSums(is.na(trainingset)) == 0]
+testingset <-testingset[,colSums(is.na(testingset)) == 0]
+``` 
+
+We will explore the data and we will avoid to show the details for clarity and space considerations.
+
+```{r, message=FALSE, results='hide'}
+dim(trainingset); dim(testingset); summary(trainingset); summary(testingset); str(trainingset); str(testingset); head(trainingset); head(testingset); 
+```
+
+The training data set contains 53 variables and 19622 obs.
+The testing data set contains 53 variables and 20 obs.
+The variable "classe" contents 5 levels: A, B, C, D and E.
+
+### Cross-validation
+
+In order to perform cross-validation, the training data set is partionned into 2 sets: TrTrainingSet (75%) and TeTrainingSet (25%).
+
+This will be performed using random subsampling without replacement. Before that the first columns are removed because the dont content any valuable information for the prediction model. 
+
+```{r, message=FALSE, results='hide'}
+trainingset   <-trainingset[,-c(1:7)]
+testingset <-testingset[,-c(1:7)]
+
+sub_trainingset <- createDataPartition(y=trainingset$classe, p=0.75, list=FALSE)
+TrTrainingSet <- trainingset[sub_trainingset, ]
+TrTrainingSet$classe <- as.factor(TrTrainingSet$classe)
+
+TeTrainingSet <- trainingset[-sub_trainingset, ]
+TeTrainingSet$classe <- as.factor(TeTrainingSet$classe)
+```
+
+We plot the variable "classe" to look at the frequency of each factor level:
+```{r, message=FALSE}
+qplot(classe, data = TrTrainingSet, main = "Classe Variables Histogram", xlab="classe", ylab = "Frequency")
+
+```
+
+### Predictions Models
+
+Decision tree and random forest algorithms are known for their ability of detecting the features that are important for classification (Outcome Vable = "classe", inout ones = "all the others").
+
+#### Expected out-of-sample error
+
+The expected out-of-sample error will correspond to the quantity: 1-accuracy in the cross-validation data. In this case the out-of-sample error will correspond to the expected number of missclassified observations/total observations in the Test data set, which is the quantity (1 - prediction model accuracy). This allows us to select one prediction model to apply on our testingSet data.
+
+
+#### 1st Prediction Model: Decision Tree
+
+```{r, messages=FALSE}
+fitmodel1 <- rpart(classe ~ ., data=TrTrainingSet, method="class")
+fancyRpartPlot(fitmodel1, type = 4)
+prediction1 <- predict(fitmodel1, TeTrainingSet, type = "class")
+confusionMatrix(prediction1, TeTrainingSet$classe)
+```
+
+#### 2nd Prediction Model: Random Forest
+```{r, messages=FALSE}
+fitmodel2 <- randomForest(classe ~. , TrTrainingSet, method="class")
+prediction2 <- predict(fitmodel2, TeTrainingSet, type = "class")
+confusionMatrix(prediction2, TeTrainingSet$classe)
+```
+
+The random forest algorithm is better than the Decision Tree one. The accuracy is 0.995.This means that the out-of-sample error is 0.5%. We will test our algorithm on the testingSet with an accuracy over 99%.
+
+#### Predicting:
+
+```{r, messages=FALSE}
+finalprediction <- predict(fitmodel2, testingset, , type = "class")
+finalprediction
+```
+
