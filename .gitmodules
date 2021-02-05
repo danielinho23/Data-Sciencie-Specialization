@@ -1,3 +1,6 @@
 [submodule "ExData_Plotting1"]
 	path = ExData_Plotting1
 	url = https://github.com/danielinho23/ExData_Plotting1.git
+[submodule "RepData_PeerAssessment1"]
+	path = RepData_PeerAssessment1
+	url = https://github.com/danielinho23/RepData_PeerAssessment1.git
