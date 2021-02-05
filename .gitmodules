@@ -7,3 +7,6 @@
 [submodule "datasciencecourseraproject"]
 	path = datasciencecourseraproject
 	url = https://github.com/danielinho23/datasciencecourseraproject.git
+[submodule "ProgrammingAssignment2"]
+	path = ProgrammingAssignment2
+	url = https://github.com/danielinho23/ProgrammingAssignment2.git
