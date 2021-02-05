@@ -4,3 +4,6 @@
 [submodule "RepData_PeerAssessment1"]
 	path = RepData_PeerAssessment1
 	url = https://github.com/danielinho23/RepData_PeerAssessment1.git
+[submodule "datasciencecourseraproject"]
+	path = datasciencecourseraproject
+	url = https://github.com/danielinho23/datasciencecourseraproject.git
