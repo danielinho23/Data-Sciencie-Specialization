@@ -1,0 +1,43 @@
+---
+title: "Plotly Graphics"
+author: "Daniel"
+date: "9/2/2021"
+output: html_document
+---
+
+```{r, , message=FALSE, results='hide', warning=FALSE}
+library(plotly)
+library(tidyr)
+library(dplyr)
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+data("mtcars")
+plot_ly(mtcars, x= ~wt, y=~mpg, mode="markers", color = as.factor(mtcars$cyl))
+plot_ly(mtcars, x= ~wt, y=~mpg, mode="markers", color = mtcars$disp)
+plot_ly(mtcars, x= ~wt, y=~mpg, mode="markers", color = as.factor(mtcars$cyl), size = mtcars$hp)
+```
+
+```{r, warning=FALSE, message=FALSE}
+
+data("EuStockMarkets")
+
+stocks<- as.data.frame(EuStockMarkets)%>%
+  gather(index, price) %>%
+  mutate(time=rep(time(EuStockMarkets),4))
+
+plot_ly(stocks, x= ~time, y= ~price, color= stocks$index)
+```
+
+```{r, warning=FALSE, message=FALSE}
+plot_ly(iris, y= ~Petal.Length, color = iris$Species, type="box")
+```
+```{r, warning=FALSE, message=FALSE}
+data("diamonds")
+p<-ggplot(data= diamonds, aes(carat, price))+
+  geom_point(aes(text=paste("Clarity:", clarity)), size=4)+
+  geom_smooth(aes(colour=cut, fill=cut))+facet_wrap(~cut)
+                  
+ggplotly(p)
+```

@@ -1,0 +1,22 @@
+---
+title: "Project"
+author: "Daniel"
+date: "8/2/2021"
+output: html_document
+---
+
+```{r}
+library(openxlsx)
+library(leaflet)
+data<-read.xlsx("Petroelum.xlsx")
+
+names(data)<-c("Campo","Empresa","Produccion", "lat","lng")
+
+map<-data%>%
+ leaflet() %>%
+ addTiles() %>%
+ addCircles(weight = 1, radius = data$Produccion, popup = paste0("Company:", data$Empresa,"\n","Field:", data$Campo, "Oil Production:",data$Produccion, "BOPD", sep= " "))%>%
+ addMarkers(clusterOptions = markerClusterOptions())
+ 
+map
+```
