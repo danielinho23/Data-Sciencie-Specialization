@@ -1,0 +1,121 @@
+---
+title: "Product Develop Project"
+author: "Daniel"
+date: "10/2/2021"
+output: ioslides_presentation
+---
+
+## Project
+
+1. Write a shiny application with associated supporting documentation. The documentation should be thought of as whatever a user will need to get started using your application.
+2. Deploy the application on Rstudio's shiny server
+3. Share the application link by pasting it into the provided text box
+4. Share your server.R and ui.R code on github
+
+## Application Summary
+
+For this app the "mtcars" data was implemented to develop two regression models that could be calculated and plotted based on the data selected by the user. Once this done, the slopes and intercepts will be shown. The general idea consists in give an input of how you can replicate this app using different data. 
+
+## ui.R
+
+```{r,eval=FALSE}
+library(shiny)
+shinyUI(fluidPage(
+    titlePanel("Project"),
+    sidebarLayout(
+        sidebarPanel(
+            h3("Slope Model 1"),
+            textOutput("SlopeOut1"),
+            h3("Slope Model 2"),
+            textOutput("SlopeOut2"),
+            h3("Intercept Model 1"),
+            textOutput("intOut1"),
+            h3("Intercept Model 2"),
+            textOutput("intOut2"),
+            checkboxInput("showModel1","Show/Hide Model 1", value = TRUE),
+            checkboxInput("showModel2","Show/Hide Model 2", value = TRUE)
+        ),
+        mainPanel(
+            plotOutput("plot1", brush = brushOpts(id="brush1")),
+
+        )
+    )
+))
+```
+## server.R
+
+```{r, eval = FALSE}
+library(shiny)
+shinyServer(function(input, output) {
+    model1 <- reactive({
+        brushed_data<- brushedPoints(mtcars, input$brush1,
+                                     xvar="hp", yvar="mpg")
+        if(nrow(brushed_data)<2){
+            return(NULL)
+        }
+        lm(mpg ~ hp, data = brushed_data)
+   })
+    model2 <- reactive({
+        brushed_data<- brushedPoints(mtcars, input$brush1,
+                                     xvar="hp", yvar="mpg")
+        if(nrow(brushed_data)<2){
+            return(NULL)
+        }
+        lm(mpg ~ hp+cyl+wt+am, data = brushed_data)
+    })
+   output$SlopeOut1<-renderText({
+       if(is.null(model1())){
+           "No model found"
+       }else{
+           model1()[[1]][2]
+       }
+   })
+   output$intOut1<-renderText({
+       if(is.null(model1())){
+           "No model found"
+       }else{
+           model1()[[1]][1]
+       }
+   })
+   output$SlopeOut2<-renderText({
+       if(is.null(model2())){
+           "No model found"
+       }else{
+           model2()[[1]][2]
+       }
+   })
+   output$intOut2<-renderText({
+       if(is.null(model2())){
+           "No model found"
+       }else{
+           model2()[[1]][1]
+       }
+   })
+   output$plot1 <- renderPlot({
+       plot(mtcars$hp, mtcars$mpg, xlab ="Horse Power",
+            ylab="Miles per Gallon", bty= "n", pch=16)
+       legend(25,250, c("Model 1", "Model 2"), pch=16,
+              col=c("red", "blue"), bty="n", cex=1.2)
+       if (input$showModel1){
+           if(!is.null(model1())){
+               abline(model1(), col="red", lwd=2)
+           }
+       }
+       if (input$showModel2){
+           if(!is.null(model2())){
+               abline(model2(), col="blue", lwd=2)
+           }
+       }
+   })
+})
+```
+
+## Final
+
+- The shiny application is deployed in ShinnyApps.io
+https://danielinho.shinyapps.io/myApp/
+
+- Git Repository
+
+
+
