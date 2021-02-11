@@ -14,7 +14,7 @@ output: ioslides_presentation
 
 ## Application Summary
 
-For this app the "mtcars" data was implemented to develop two regression models that could be calculated and plotted based on the data selected by the user. Once this done, the slopes and intercepts will be shown. The general idea consists in give an input of how you can replicate this app using different data. 
+For this app the "mtcars" data was implemented to develop two regression models that could be calculated and plotted based on the data selected by the user. Once this has been done, the slopes and intercepts will be shown. The general idea consists in give an input of how you can replicate this app using different data. 
 
 ## ui.R
 
