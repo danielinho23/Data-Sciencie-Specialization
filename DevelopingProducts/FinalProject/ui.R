@@ -13,7 +13,7 @@ library(shiny)
 shinyUI(fluidPage(
 
     # Application title
-    titlePanel("Data Sciencie Project"),
+    titlePanel("Data Science Project"),
 
     # Sidebar with a slider input for number of bins
     sidebarLayout(
@@ -34,6 +34,8 @@ shinyUI(fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
+            
+            h3("Select some points and you will get your Model. You can show or hide them!"),
             plotOutput("plot1", brush = brushOpts(id="brush1")),
             #h3("Predicted Horsepower from Model 1"),
             #textOutput("pred1"),
